@@ -18,18 +18,19 @@ function Signup() {
 
     try {
       const response = await axios.post("http://localhost:8080/api/signup", {
-        name,
-        email,
-        password,
-        role
+        name: name,
+        email: email,
+        password: password,
+        role: role
       });
 
       if (response.data.success) {
         alert("Signup successful!");
-        navigate("/login");
+        navigate("/login");   // redirect to login page
       } else {
         alert(response.data.message);
       }
+
     } catch (error) {
       console.error(error);
       alert("Signup failed. Please check console for details.");
@@ -38,7 +39,9 @@ function Signup() {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Typography variant="h4" gutterBottom>Signup</Typography>
+      <Typography variant="h4" gutterBottom>
+        Signup
+      </Typography>
 
       <TextField
         label="Name"
@@ -78,7 +81,7 @@ function Signup() {
         </Select>
       </Box>
 
-      <Button variant="contained" color="primary" onClick={handleSignup}>
+      <Button variant="contained" color="primary" fullWidth onClick={handleSignup}>
         Signup
       </Button>
     </Container>

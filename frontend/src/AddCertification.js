@@ -18,7 +18,7 @@ function AddCertification() {
       expiryDate,
     };
 
-    await axios.post("http://localhost:8080/api/certifications", certification);
+    await axios.post("http://localhost:8081/api/certifications", certification);
 
     alert("Certification added successfully!");
 
