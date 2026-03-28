@@ -1,89 +1,302 @@
-import React, { useState } from "react";
 import axios from "axios";
+import { useState } from "react";
+import { Container, TextField, Button, Typography, Box, Card, CardContent, Alert, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Container, TextField, Button, Select, MenuItem, Typography, Box } from "@mui/material";
 
 function Signup() {
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("USER"); // default role
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("USER");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async () => {
-    if (!name || !email || !password || !role) {
-      alert("Please fill all fields");
+    setError("");
+    setSuccess("");
+
+    // Validation
+    if (!name || !email || !password || !confirmPassword || !role) {
+      setError("All fields are required");
       return;
     }
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    const userData = {
+      name: name,
+      email: email,
+      password: password,
+      role: role
+    };
+
+    setLoading(true);
+
     try {
-      const response = await axios.post("http://localhost:8080/api/signup", {
-        name: name,
-        email: email,
-        password: password,
-        role: role
-      });
-
-      if (response.data.success) {
-        alert("Signup successful!");
-        navigate("/login");   // redirect to login page
-      } else {
-        alert(response.data.message);
-      }
-
-    } catch (error) {
-      console.error(error);
-      alert("Signup failed. Please check console for details.");
+      const res = await axios.post("http://localhost:8080/api/signup", userData);
+      setSuccess(res.data.message || "Signup successful!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } catch (err) {
+      setError(err.response?.data?.message || "Signup failed. Please try again.");
+      console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Typography variant="h4" gutterBottom>
-        Signup
-      </Typography>
+    <Container maxWidth="sm" sx={{ mt: 8, mb: 8 }}>
+      <Card 
+        sx={{ 
+          boxShadow: 3, 
+          borderRadius: 2,
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        }}
+      >
+        <CardContent sx={{ p: 4 }}>
+          <Typography 
+            variant="h4" 
+            gutterBottom 
+            sx={{ 
+              fontWeight: "bold", 
+              color: "white", 
+              textAlign: "center",
+              mb: 3
+            }}
+          >
+            Create Account
+          </Typography>
 
-      <TextField
-        label="Name"
-        fullWidth
-        sx={{ mb: 2 }}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-      <TextField
-        label="Email"
-        type="email"
-        fullWidth
-        sx={{ mb: 2 }}
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <TextField
+              label="Full Name"
+              placeholder="Enter your full name"
+              fullWidth
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              variant="outlined"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  color: "white",
+                  "& fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.8)",
+                  },
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: "rgba(255, 255, 255, 0.7)",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "rgba(255, 255, 255, 0.9)",
+                },
+              }}
+              InputLabelProps={{
+                style: { color: "rgba(255, 255, 255, 0.9)" },
+              }}
+            />
 
-      <TextField
-        label="Password"
-        type="password"
-        fullWidth
-        sx={{ mb: 2 }}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+            <TextField
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              fullWidth
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              variant="outlined"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  color: "white",
+                  "& fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.8)",
+                  },
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: "rgba(255, 255, 255, 0.7)",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "rgba(255, 255, 255, 0.9)",
+                },
+              }}
+              InputLabelProps={{
+                style: { color: "rgba(255, 255, 255, 0.9)" },
+              }}
+            />
 
-      <Box sx={{ mb: 2 }}>
-        <Typography>Role:</Typography>
-        <Select
-          fullWidth
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-        >
-          <MenuItem value="USER">User</MenuItem>
-          <MenuItem value="ADMIN">Admin</MenuItem>
-        </Select>
-      </Box>
+            <TextField
+              label="Password"
+              type="password"
+              placeholder="Enter your password (min 6 chars)"
+              fullWidth
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              variant="outlined"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  color: "white",
+                  "& fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.8)",
+                  },
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: "rgba(255, 255, 255, 0.7)",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "rgba(255, 255, 255, 0.9)",
+                },
+              }}
+              InputLabelProps={{
+                style: { color: "rgba(255, 255, 255, 0.9)" },
+              }}
+            />
 
-      <Button variant="contained" color="primary" fullWidth onClick={handleSignup}>
-        Signup
-      </Button>
+            <TextField
+              label="Confirm Password"
+              type="password"
+              placeholder="Confirm your password"
+              fullWidth
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              variant="outlined"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  color: "white",
+                  "& fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.8)",
+                  },
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: "rgba(255, 255, 255, 0.7)",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "rgba(255, 255, 255, 0.9)",
+                },
+              }}
+              InputLabelProps={{
+                style: { color: "rgba(255, 255, 255, 0.9)" },
+              }}
+            />
+
+            <FormControl 
+              fullWidth
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  color: "white",
+                  "& fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.8)",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  color: "rgba(255, 255, 255, 0.9)",
+                },
+              }}
+            >
+              <InputLabel 
+                sx={{ 
+                  color: "rgba(255, 255, 255, 0.9) !important",
+                  "&.Mui-focused": {
+                    color: "rgba(255, 255, 255, 0.9) !important",
+                  }
+                }}
+              >
+                Select Role
+              </InputLabel>
+              <Select
+                value={role}
+                label="Select Role"
+                onChange={(e) => setRole(e.target.value)}
+                sx={{
+                  color: "white",
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgba(255, 255, 255, 0.8)",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgba(255, 255, 255, 0.9)",
+                  },
+                  "& .MuiSvgIcon-root": {
+                    color: "rgba(255, 255, 255, 0.9)",
+                  },
+                }}
+              >
+                <MenuItem value="USER">
+                  👤 User
+                </MenuItem>
+                <MenuItem value="ADMIN">
+                  🛡️ Admin
+                </MenuItem>
+              </Select>
+            </FormControl>
+
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: "rgba(255, 255, 255, 0.8)",
+                textAlign: "center",
+                mt: -1
+              }}
+            >
+              {role === "ADMIN" ? "Admin can manage users and certifications" : "User can track personal certifications"}
+            </Typography>
+
+            <Button 
+              variant="contained" 
+              onClick={handleSignup}
+              disabled={loading}
+              sx={{
+                mt: 2,
+                py: 1.5,
+                fontSize: "16px",
+                fontWeight: "bold",
+                backgroundColor: "white",
+                color: "#667eea",
+                "&:hover": {
+                  backgroundColor: "#f0f0f0",
+                },
+                textTransform: "none",
+              }}
+            >
+              {loading ? "Creating Account..." : "Sign Up"}
+            </Button>
+
+            <Typography sx={{ textAlign: "center", color: "white", mt: 2 }}>
+              Already have an account? <a href="/login" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Login here</a>
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
     </Container>
   );
 }
