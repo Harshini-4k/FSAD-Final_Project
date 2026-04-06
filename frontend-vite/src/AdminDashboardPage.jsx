@@ -84,7 +84,7 @@ function AdminDashboardPage() {
         console.error("Response error:", error.response.data);
         alert("Error: " + (error.response.data?.message || "Failed to fetch certifications"));
       } else {
-        alert("Network error: Check if backend is running on port 8080");
+        alert("Network error: Check if backend is running on port 8081");
       }
       setCertificates([]);
     } finally {

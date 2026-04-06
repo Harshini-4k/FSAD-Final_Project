@@ -8,10 +8,9 @@ import backend.model.User;
 import backend.repository.UserRepository;
 
 import java.util.Map;
-
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"})
 public class AuthController {
 
     @Autowired

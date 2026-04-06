@@ -9,7 +9,7 @@ import backend.repository.CertificationRepository;
 
 @RestController
 @RequestMapping("/api/certifications")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"})
 public class CertificationController {
 
     @Autowired
