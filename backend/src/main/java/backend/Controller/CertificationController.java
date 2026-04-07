@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import backend.repository.CertificationRepository;
+import backend.repository.UserRepository;
 
 @RestController
 @RequestMapping("/api/certifications")
@@ -14,6 +15,9 @@ public class CertificationController {
 
     @Autowired
     private CertificationRepository repository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Get all certifications (Admin)
     @GetMapping
@@ -130,6 +134,22 @@ public class CertificationController {
             return ResponseEntity.ok(suggestions);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Error fetching suggestions: " + e.getMessage()));
+        }
+    }
+
+    // Get all recommended certifications from Harshini user
+    @GetMapping("/recommended/harshini")
+    public ResponseEntity<?> getHarshiniRecommendedCertifications() {
+        try {
+            var harshini = userRepository.findByName("Harshini");
+            if (harshini == null) {
+                // Fallback to userId 1 if the Harshini user record is not present in the database
+                return ResponseEntity.ok(repository.findByUserId(1L));
+            }
+            List<Certification> recommendations = repository.findByUserId(harshini.getId());
+            return ResponseEntity.ok(recommendations);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "Error fetching recommended certifications: " + e.getMessage()));
         }
     }
 
