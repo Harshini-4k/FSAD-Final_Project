@@ -6,8 +6,11 @@ import org.springframework.web.bind.annotation.*;
 
 import backend.model.User;
 import backend.repository.UserRepository;
+import backend.repository.CertificationRepository;
 
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"})
@@ -15,6 +18,9 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CertificationRepository certificationRepository;
 
     // ================= SIGNUP =================
     @PostMapping("/signup")
@@ -56,5 +62,43 @@ public class AuthController {
                         "message", "Login successful"
                 )
         );
+    }
+
+    // ================= ADMIN ENDPOINTS =================
+
+    // Get total number of users
+    @GetMapping("/admin/users/count")
+    public ResponseEntity<?> getUserCount() {
+        try {
+            long userCount = userRepository.count();
+            return ResponseEntity.ok(Map.of("count", userCount));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to fetch user count"));
+        }
+    }
+
+    // Get users with their certification counts
+    @GetMapping("/admin/users/certificates")
+    public ResponseEntity<?> getUsersWithCertificateCounts() {
+        try {
+            List<User> users = userRepository.findAll();
+            List<Map<String, Object>> result = new ArrayList<>();
+
+            for (User user : users) {
+                long certCount = certificationRepository.countByUserId(user.getId());
+                Map<String, Object> userData = Map.of(
+                    "id", user.getId(),
+                    "name", user.getName(),
+                    "email", user.getEmail(),
+                    "role", user.getRole(),
+                    "certificateCount", certCount
+                );
+                result.add(userData);
+            }
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to fetch user certificate data"));
+        }
     }
 }

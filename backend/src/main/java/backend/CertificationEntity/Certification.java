@@ -12,15 +12,18 @@ public class Certification {
     private Long userId;
     private String certificationName;
     private String organization;
-    private String course; // New field for course association
+    private String course;
     private String issueDate;
     private String expiryDate;
-    private String status; // ACTIVE, EXPIRING_SOON, EXPIRED
+    private String status;
+
+    // ✅ NEW FIELD (for file)
+    private String certificateFile;
 
     public Certification() {}
 
-    public Certification(Long userId, String certificationName, String organization, 
-                        String course, String issueDate, String expiryDate, String status) {
+    public Certification(Long userId, String certificationName, String organization,
+                         String course, String issueDate, String expiryDate, String status) {
         this.userId = userId;
         this.certificationName = certificationName;
         this.organization = organization;
@@ -30,63 +33,30 @@ public class Certification {
         this.status = status;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public Long getUserId() {
-        return userId;
-    }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+    public String getCertificationName() { return certificationName; }
+    public void setCertificationName(String certificationName) { this.certificationName = certificationName; }
 
-    public String getCertificationName() {
-        return certificationName;
-    }
+    public String getOrganization() { return organization; }
+    public void setOrganization(String organization) { this.organization = organization; }
 
-    public void setCertificationName(String certificationName) {
-        this.certificationName = certificationName;
-    }
+    public String getCourse() { return course; }
+    public void setCourse(String course) { this.course = course; }
 
-    public String getOrganization() {
-        return organization;
-    }
+    public String getIssueDate() { return issueDate; }
+    public void setIssueDate(String issueDate) { this.issueDate = issueDate; }
 
-    public void setOrganization(String organization) {
-        this.organization = organization;
-    }
+    public String getExpiryDate() { return expiryDate; }
+    public void setExpiryDate(String expiryDate) { this.expiryDate = expiryDate; }
 
-    public String getIssueDate() {
-        return issueDate;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public void setIssueDate(String issueDate) {
-        this.issueDate = issueDate;
-    }
-
-    public String getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(String expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getCourse() {
-        return course;
-    }
-
-    public void setCourse(String course) {
-        this.course = course;
-    }
+    // ✅ NEW GETTER SETTER
+    public String getCertificateFile() { return certificateFile; }
+    public void setCertificateFile(String certificateFile) { this.certificateFile = certificateFile; }
 }

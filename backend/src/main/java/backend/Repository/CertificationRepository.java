@@ -8,4 +8,5 @@ public interface CertificationRepository extends JpaRepository<Certification, Lo
     List<Certification> findByUserId(Long userId);
     List<Certification> findByStatus(String status);
     List<Certification> findByCourse(String course);
+    long countByUserId(Long userId);
 }
