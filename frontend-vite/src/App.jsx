@@ -7,6 +7,7 @@ import UserDashboard from "./UserDashboard"; // User certifications
 import AdminDashboardPage from "./AdminDashboardPage"; // Admin certifications
 import Login from "./Login";
 import Signup from "./Signup";
+import ForgotPassword from "./ForgotPassword";
 import AddCertification from "./AddCertification";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -130,6 +131,7 @@ function AppContent() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/add"
           element={
