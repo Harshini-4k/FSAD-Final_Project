@@ -1,14 +1,26 @@
 import React from "react";
-import { Container, Typography, Grid, Card, CardContent, Button, Box } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  Button,
+  Box,
+} from "@mui/material";
 import { Link } from "react-router-dom";
+import certificateImg from "./assets/certificate_page-0001.jpg";
 
 function Dashboard() {
   return (
     <Box sx={{ minHeight: "100vh", background: "#f3f4f6" }}>
+      
+      {/* HERO SECTION */}
       <Box
         sx={{
           minHeight: "80vh",
-          backgroundImage: "url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1950&q=80')",
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1950&q=80')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           position: "relative",
@@ -45,7 +57,6 @@ function Dashboard() {
             variant="contained"
             sx={{
               backgroundColor: "#1d4ed8",
-              color: "white",
               px: 5,
               py: 1.5,
               borderRadius: "999px",
@@ -58,109 +69,134 @@ function Dashboard() {
         </Container>
       </Box>
 
-      <Container id="about" sx={{ py: 8 }}>
-        <Typography variant="h4" align="center" sx={{ fontWeight: 700, mb: 2 }}>
-          About CertiTracker
-        </Typography>
+      {/* ABOUT SECTION */}
+      <Box id="about" sx={{ backgroundColor: "#ffffff", py: 8 }}>
+        <Container>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+            }}
+          >
+            {/* LEFT TEXT */}
+            <Box sx={{ flex: 1, pr: 3, minWidth: "300px" }}>
+              <Typography variant="h3" fontWeight="bold" gutterBottom>
+                Manage Certifications Easily
+              </Typography>
 
-        <Typography align="center" sx={{ maxWidth: 800, mx: "auto", color: "#475569", mb: 4 }}>
-          CertiTracker is a comprehensive platform designed to streamline certification management for students and professionals.
-        </Typography>
+              <Typography sx={{ mb: 2, fontSize: "18px" }}>
+                Certification Tracker helps students and professionals manage all certifications in one place.
+              </Typography>
 
-        <Box sx={{ maxWidth: 800, mx: "auto" }}>
-          <Typography sx={{ mb: 2, color: "#475569" }}>
-            • <strong>Centralized Management:</strong> Store all your certifications in one secure location
-          </Typography>
-          <Typography sx={{ mb: 2, color: "#475569" }}>
-            • <strong>Expiry Tracking:</strong> Get notified about upcoming renewals and never miss deadlines
-          </Typography>
-          <Typography sx={{ mb: 2, color: "#475569" }}>
-            • <strong>Role-Based Access:</strong> Separate dashboards for admins and users with appropriate permissions
-          </Typography>
-          <Typography sx={{ mb: 2, color: "#475569" }}>
-            • <strong>Admin Oversight:</strong> Admins can monitor all user certifications, manage team progress, and generate organizational reports
-          </Typography>
-        </Box>
+              <Typography sx={{ mb: 2, fontSize: "18px" }}>
+                Track expiration dates and get reminders for renewals.
+              </Typography>
 
-        <Box id="features" sx={{ mt: 8 }}>
-          <Typography variant="h4" align="center" sx={{ fontWeight: 700, mb: 4 }}>
+              <Typography sx={{ mb: 2, fontSize: "18px" }}>
+                Store certificates securely and access them anytime.
+              </Typography>
+
+              <Typography sx={{ mb: 2, fontSize: "18px" }}>
+                Admins can monitor and manage certification records efficiently.
+              </Typography>
+            </Box>
+
+            {/* RIGHT IMAGE */}
+            <Box
+              sx={{
+                flex: 1,
+                textAlign: "center",
+                minWidth: "300px",
+                mt: { xs: 4, md: 0 },
+              }}
+            >
+              <img
+                src={certificateImg}
+                alt="Certificate"
+                style={{
+                  width: "100%",
+                  maxWidth: "400px",
+                  borderRadius: "12px",
+                  boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
+                }}
+              />
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ✅ FEATURES SECTION (LIGHT BLUE ADDED HERE) */}
+      <Box
+        id="features"
+        sx={{
+          py: 8,
+          backgroundColor: "#e3f2fd", // 💙 light blue
+        }}
+      >
+        <Container>
+          <Typography variant="h4" align="center" fontWeight={700} mb={4}>
             Features
           </Typography>
 
           <Grid container spacing={4}>
-            <Grid item xs={12} md={4}>
-              <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-                <CardContent>
-                  <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                    Add Certifications
-                  </Typography>
-                  <Typography>Save details, dates, and status for each certification</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-                <CardContent>
-                  <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                    Expiry Tracking
-                  </Typography>
-                  <Typography>Know which certifications are expiring soon and need renewal</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-                <CardContent>
-                  <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                    Role-Based Access
-                  </Typography>
-                  <Typography>Admin and user dashboards for secure management across teams</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-                <CardContent>
-                  <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                    Dashboard Analytics
-                  </Typography>
-                  <Typography>Visualize certification data with charts and progress insights</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-                <CardContent>
-                  <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                    Notifications
-                  </Typography>
-                  <Typography>Receive alerts for expiring certifications and important updates</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-                <CardContent>
-                  <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                    Search and Filter
-                  </Typography>
-                  <Typography>Quickly find certifications by name, date, status, or category</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+            {[
+              "Add Certifications",
+              "Expiry Tracking",
+              "Role-Based Access",
+              "Dashboard Analytics",
+              "Notifications",
+              "Search and Filter",
+            ].map((title, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+                  <CardContent>
+                    <Typography variant="h6" fontWeight={700} mb={2}>
+                      {title}
+                    </Typography>
+                    <Typography>
+                      Manage and track certifications efficiently with modern tools.
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        </Box>
-      </Container>
+        </Container>
+      </Box>
 
+      {/* CONTACT SECTION */}
+      <Box
+        id="contact"
+        sx={{
+          backgroundColor: "#ffffff",
+          color: "#000",
+          py: 8,
+        }}
+      >
+        <Container maxWidth="md">
+          <Typography variant="h4" align="center" fontWeight={700} mb={4}>
+            Contact Us
+          </Typography>
+
+          <Typography align="center" sx={{ mb: 3, fontSize: "18px" }}>
+            Have questions or need help? Reach out to us anytime.
+          </Typography>
+
+          <Box sx={{ textAlign: "center", lineHeight: "2" }}>
+            <Typography>📧 Email: support@certitracker.com</Typography>
+            <Typography>📞 Phone: +91 98765 43210</Typography>
+            <Typography>📍 Address: Andhra Pradesh, India</Typography>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* FOOTER */}
       <Box sx={{ background: "#0f172a", color: "white", py: 4 }}>
-        <Container maxWidth="lg">
-          <Typography align="center" sx={{ fontWeight: 600 }}>
-            � 2026 CertiTracker � All rights reserved
+        <Container>
+          <Typography align="center" fontWeight={600}>
+            © 2026 CertiTracker | All rights reserved
           </Typography>
         </Container>
       </Box>
