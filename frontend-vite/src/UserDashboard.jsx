@@ -61,6 +61,7 @@ function UserDashboard() {
       console.log("Certifications fetched:", response.data);
       setCertificates(response.data);
       calculateStats(response.data);
+      fetchRecommendedCertificates();
     } catch (error) {
       console.error("Error fetching certifications:", error);
       if (error.response) {
@@ -81,25 +82,25 @@ function UserDashboard() {
       expired = 0;
 
     certs.forEach((cert) => {
-      const expiry = new Date(cert.expiryDate);
-      const today = new Date();
-      const daysLeft = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-
-      if (daysLeft < 0) expired++;
-      else if (daysLeft <= 30) expiring++;
-      else active++;
+      if (cert.status === "EXPIRED") {
+        expired++;
+      } else if (cert.status === "EXPIRING_SOON") {
+        expiring++;
+      } else if (cert.status === "ACTIVE") {
+        active++;
+      }
     });
 
     setStats({ active, expiring, expired });
   };
 
-  const fetchSuggestions = async (course) => {
-    if (!course) return;
+  const fetchRecommendedCertificates = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/certifications/suggestions/${user.id}/${course}`);
+      const response = await axios.get("http://localhost:8080/api/certifications/recommended/harshini");
       setSuggestions(response.data);
     } catch (error) {
-      console.error("Error fetching suggestions:", error);
+      console.error("Error fetching recommended certificates:", error);
+      setSuggestions([]);
     }
   };
 
@@ -162,7 +163,6 @@ function UserDashboard() {
         });
         console.log("Add response:", response.data);
         alert("Certification added successfully!");
-        fetchSuggestions(formData.course);
       }
 
       handleCloseDialog();
@@ -265,40 +265,45 @@ function UserDashboard() {
           </Button>
         </Box>
 
-        {/* Certificates Grid */}
-        {loading ? (
-          <Typography>Loading your certifications...</Typography>
-        ) : certificates.length === 0 ? (
-          <Card sx={{ p: 3, textAlign: "center", boxShadow: 2 }}>
-            <Typography variant="h6">No certifications yet</Typography>
-            <Typography variant="body2" sx={{ color: "#666", mt: 1 }}>
-              Click "Add New Certification" to get started!
-            </Typography>
-          </Card>
-        ) : (
-          <Grid container spacing={3}>
-            {certificates.map((cert) => (
-              <Grid item xs={12} md={6} lg={4} key={cert.id}>
-                <CertificateCard
-                  certificate={cert}
-                  onEdit={handleOpenDialog}
-                  onDelete={handleDeleteCertification}
-                  onRenew={handleRenewCertification}
-                  isAdmin={false}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        )}
+        {/* My Certificates Section */}
+        <Box sx={{ mb: 3, mt: 2 }}>
+          <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold", color: "#1976d2" }}>
+            My Certificates
+          </Typography>
+          {loading ? (
+            <Typography>Loading your certificates...</Typography>
+          ) : certificates.length === 0 ? (
+            <Card sx={{ p: 3, textAlign: "center", boxShadow: 2 }}>
+              <Typography variant="h6">No certificates added yet</Typography>
+              <Typography variant="body2" sx={{ color: "#666", mt: 1 }}>
+                Click "Add New Certification" to get started!
+              </Typography>
+            </Card>
+          ) : (
+            <Grid container spacing={3}>
+              {certificates.map((cert) => (
+                <Grid item xs={12} md={6} lg={4} key={cert.id}>
+                  <CertificateCard
+                    certificate={cert}
+                    onEdit={handleOpenDialog}
+                    onDelete={handleDeleteCertification}
+                    onRenew={handleRenewCertification}
+                    isAdmin={false}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Box>
 
-        {/* Suggestions Section */}
+        {/* Recommended Certificates */}
         {suggestions.length > 0 && (
           <Box sx={{ mt: 4 }}>
             <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold", color: "#1976d2" }}>
-              💡 Suggested Certifications
+              Recommended Certificates
             </Typography>
             <Typography variant="body2" sx={{ mb: 3, color: "#666" }}>
-              Based on your recent addition, here are other certifications in the same course you might be interested in:
+              Based on your recent addition, here are other certificates you may want to consider:
             </Typography>
             <Grid container spacing={3}>
               {suggestions.slice(0, 6).map((cert) => (
