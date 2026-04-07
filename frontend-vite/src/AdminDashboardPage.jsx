@@ -96,30 +96,45 @@ function AdminDashboardPage() {
     let active = 0,
       expiring = 0,
       expired = 0;
+    const userIds = new Set();
 
     certs.forEach((cert) => {
-      const expiry = new Date(cert.expiryDate);
-      const today = new Date();
-      const daysLeft = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+      const status = (cert.status || "").toString().trim().toUpperCase();
+      if (cert.userId != null) {
+        userIds.add(cert.userId);
+      }
 
-      if (daysLeft < 0) expired++;
-      else if (daysLeft <= 30) expiring++;
-      else active++;
+      if (status === "EXPIRED") {
+        expired++;
+      } else if (status === "EXPIRING_SOON") {
+        expiring++;
+      } else if (status === "ACTIVE") {
+        active++;
+      } else {
+        const expiry = new Date(cert.expiryDate);
+        const today = new Date();
+        const daysLeft = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+
+        if (daysLeft < 0) expired++;
+        else if (daysLeft <= 30) expiring++;
+        else active++;
+      }
     });
 
-    setStats({
+    setStats((prevStats) => ({
+      ...prevStats,
       total: certs.length,
       active,
       expiring,
       expired,
-    });
+    }));
   };
 
   const getFilteredCertificates = () => {
     if (filterStatus === "ALL") {
       return certificates;
     }
-    return certificates.filter((cert) => cert.status === filterStatus);
+    return certificates.filter((cert) => (cert.status || "").toString().trim().toUpperCase() === filterStatus);
   };
 
   const getStatusColor = (status) => {
@@ -362,7 +377,7 @@ function AdminDashboardPage() {
             ))}
           </Grid>
         ) : (
-          <TableContainer component={Card}>
+          <TableContainer component={Card} sx={{ width: "100%", overflowX: "auto" }}>
             <Table>
               <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
                 <TableRow>
