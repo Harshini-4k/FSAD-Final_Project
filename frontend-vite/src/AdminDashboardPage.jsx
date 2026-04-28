@@ -99,25 +99,21 @@ function AdminDashboardPage() {
     const userIds = new Set();
 
     certs.forEach((cert) => {
-      const status = (cert.status || "").toString().trim().toUpperCase();
       if (cert.userId != null) {
         userIds.add(cert.userId);
       }
 
-      if (status === "EXPIRED") {
-        expired++;
-      } else if (status === "EXPIRING_SOON") {
-        expiring++;
-      } else if (status === "ACTIVE") {
-        active++;
-      } else {
-        const expiry = new Date(cert.expiryDate);
-        const today = new Date();
-        const daysLeft = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+      // Calculate status based on expiry date to ensure accuracy
+      const expiryDate = new Date(cert.expiryDate);
+      const today = new Date();
+      const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
 
-        if (daysLeft < 0) expired++;
-        else if (daysLeft <= 30) expiring++;
-        else active++;
+      if (daysUntilExpiry < 0) {
+        expired++;
+      } else if (daysUntilExpiry <= 30) {
+        expiring++;
+      } else {
+        active++;
       }
     });
 

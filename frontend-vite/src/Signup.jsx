@@ -19,9 +19,38 @@ function Signup() {
     setError("");
     setSuccess("");
 
-    // Validation
-    if (!name || !email || !password || !confirmPassword || !role) {
-      setError("All fields are required");
+    // Enhanced Validation
+    if (!name.trim()) {
+      setError("Name is required");
+      return;
+    }
+
+    if (name.trim().length < 2) {
+      setError("Name must be at least 2 characters");
+      return;
+    }
+
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    // Email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (!password) {
+      setError("Password is required");
+      return;
+    }
+
+    // Strong password validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setError("Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character");
       return;
     }
 
@@ -30,8 +59,8 @@ function Signup() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (!role) {
+      setError("Please select a role");
       return;
     }
 

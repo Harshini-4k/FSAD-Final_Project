@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Container, TextField, Button, Typography, Box, Card, CardContent, Alert } from "@mui/material";
 
-function Login() {
+function Login({ setUser }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -13,8 +13,20 @@ function Login() {
   const handleLogin = async () => {
     setError("");
 
-    if (!email || !password) {
-      setError("Email and password are required");
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    // Email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (!password) {
+      setError("Password is required");
       return;
     }
 
@@ -36,6 +48,12 @@ function Login() {
         };
         localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("userRole", response.data.role);
+        localStorage.setItem("lastActivity", Date.now().toString());
+
+        // Update app state so navbar reflects login immediately
+        if (setUser) {
+          setUser(userData);
+        }
 
         // Redirect based on role
         if (response.data.role === "ADMIN") {

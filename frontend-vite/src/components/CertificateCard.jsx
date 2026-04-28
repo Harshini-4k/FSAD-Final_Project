@@ -41,9 +41,7 @@ function CertificateCard({ certificate, onEdit, onDelete, onRenew, isAdmin }) {
     }
   };
 
-  const status = certificate.status
-    ? certificate.status.toString().trim().toUpperCase()
-    : getExpiryStatus(certificate.expiryDate);
+  const status = getExpiryStatus(certificate.expiryDate);
   const daysLeft = Math.ceil((new Date(certificate.expiryDate) - new Date()) / (1000 * 60 * 60 * 24));
 
   return (

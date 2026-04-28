@@ -61,7 +61,12 @@ function UserDashboard() {
       console.log("Certifications fetched:", response.data);
       setCertificates(response.data);
       calculateStats(response.data);
-      fetchRecommendedCertificates();
+      // Only fetch suggested certificates if user has added at least one
+      if (response.data.length > 0) {
+        fetchSuggestedCertificates();
+      } else {
+        setSuggestions([]); // Clear suggestions if no certificates
+      }
     } catch (error) {
       console.error("Error fetching certifications:", error);
       if (error.response) {
@@ -82,11 +87,16 @@ function UserDashboard() {
       expired = 0;
 
     certs.forEach((cert) => {
-      if (cert.status === "EXPIRED") {
+      // Calculate status based on expiry date to ensure accuracy
+      const expiryDate = new Date(cert.expiryDate);
+      const today = new Date();
+      const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+
+      if (daysUntilExpiry < 0) {
         expired++;
-      } else if (cert.status === "EXPIRING_SOON") {
+      } else if (daysUntilExpiry <= 30) {
         expiring++;
-      } else if (cert.status === "ACTIVE") {
+      } else {
         active++;
       }
     });
@@ -94,12 +104,12 @@ function UserDashboard() {
     setStats({ active, expiring, expired });
   };
 
-  const fetchRecommendedCertificates = async () => {
+  const fetchSuggestedCertificates = async () => {
     try {
       const response = await axios.get("http://localhost:8080/api/certifications/recommended/harshini");
       setSuggestions(response.data);
     } catch (error) {
-      console.error("Error fetching recommended certificates:", error);
+      console.error("Error fetching Suggested Certificates:", error);
       setSuggestions([]);
     }
   };
@@ -296,14 +306,14 @@ function UserDashboard() {
           )}
         </Box>
 
-        {/* Recommended Certificates */}
-        {suggestions.length > 0 && (
+        {/* Suggested Certificates - Only show when user has added certificates */}
+        {certificates.length > 0 && suggestions.length > 0 && (
           <Box sx={{ mt: 4 }}>
             <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold", color: "#1976d2" }}>
-              Recommended Certificates
+              Suggested Certificates
             </Typography>
             <Typography variant="body2" sx={{ mb: 3, color: "#666" }}>
-              Based on your recent addition, here are other certificates you may want to consider:
+              Based on your certifications, here are other courses you may want to consider:
             </Typography>
             <Grid container spacing={3}>
               {suggestions.slice(0, 6).map((cert) => (

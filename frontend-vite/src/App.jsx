@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
-import { AppBar, Toolbar, Typography, Button, Box, Select, MenuItem, Container } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box, Select, MenuItem, Container, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 
 import Dashboard from "./Dashboard"; // Landing page
 import UserDashboard from "./UserDashboard"; // User certifications
@@ -13,20 +13,85 @@ import ProtectedRoute from "./ProtectedRoute";
 
 function AppContent() {
   const [user, setUser] = useState(null);
+  const [sessionWarning, setSessionWarning] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
   const navigate = useNavigate();
+
+  // Session timeout configuration
+  const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+  const WARNING_TIME = 5 * 60 * 1000; // Show warning 5 minutes before timeout
+
+  // Update last activity timestamp
+  const updateActivity = useCallback(() => {
+    const now = Date.now();
+    localStorage.setItem("lastActivity", now.toString());
+  }, []);
+
+  // Check session timeout
+  const checkSessionTimeout = useCallback(() => {
+    const storedUser = localStorage.getItem("user");
+    const lastActivity = localStorage.getItem("lastActivity");
+
+    if (storedUser && lastActivity) {
+      const now = Date.now();
+      const timeSinceActivity = now - parseInt(lastActivity);
+      const timeUntilTimeout = SESSION_TIMEOUT - timeSinceActivity;
+
+      if (timeSinceActivity >= SESSION_TIMEOUT) {
+        // Session expired
+        handleLogout();
+        return;
+      }
+
+      if (timeUntilTimeout <= WARNING_TIME && timeUntilTimeout > 0) {
+        // Show warning
+        setTimeLeft(Math.ceil(timeUntilTimeout / 1000 / 60)); // minutes
+        setSessionWarning(true);
+      } else {
+        setSessionWarning(false);
+      }
+    }
+  }, [SESSION_TIMEOUT, WARNING_TIME]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+      updateActivity(); // Set initial activity
     }
-  }, []);
+
+    // Set up activity listeners
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => {
+      document.addEventListener(event, updateActivity, true);
+    });
+
+    // Check session every minute
+    const sessionCheck = setInterval(checkSessionTimeout, 60000);
+
+    // Initial check
+    checkSessionTimeout();
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, updateActivity, true);
+      });
+      clearInterval(sessionCheck);
+    };
+  }, [updateActivity, checkSessionTimeout]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("lastActivity");
     setUser(null);
+    setSessionWarning(false);
     navigate("/");
+  };
+
+  const extendSession = () => {
+    updateActivity();
+    setSessionWarning(false);
   };
 
   const scrollToSection = (sectionId) => {
@@ -129,7 +194,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
@@ -141,6 +206,31 @@ function AppContent() {
           }
         />
       </Routes>
+
+      {/* Session Timeout Warning Dialog */}
+      <Dialog
+        open={sessionWarning}
+        onClose={extendSession}
+        aria-labelledby="session-warning-title"
+      >
+        <DialogTitle id="session-warning-title">
+          Session Timeout Warning
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            Your session will expire in {timeLeft} minute{timeLeft !== 1 ? 's' : ''} due to inactivity.
+            Click "Continue" to extend your session or "Logout" to end it now.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogout} color="secondary">
+            Logout
+          </Button>
+          <Button onClick={extendSession} color="primary" variant="contained">
+            Continue Session
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

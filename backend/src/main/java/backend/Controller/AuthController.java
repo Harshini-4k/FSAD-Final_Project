@@ -8,6 +8,8 @@ import backend.model.User;
 import backend.repository.UserRepository;
 import backend.repository.CertificationRepository;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -22,6 +24,9 @@ public class AuthController {
     @Autowired
     private CertificationRepository certificationRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     // ================= SIGNUP =================
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User user) {
@@ -30,6 +35,9 @@ public class AuthController {
             return ResponseEntity.badRequest()
                     .body(Map.of("success", false, "message", "Email already exists"));
         }
+
+        // Hash the password before saving
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepository.save(user);
 
@@ -47,7 +55,7 @@ public class AuthController {
 
         User user = userRepository.findByEmail(email);
 
-        if (user == null || !user.getPassword().equals(password)) {
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
             return ResponseEntity.status(401)
                     .body(Map.of("success", false, "message", "Invalid credentials"));
         }
